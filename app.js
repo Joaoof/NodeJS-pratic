@@ -16,6 +16,12 @@ app.use(express.json())
 
 // ! Rotas
 
+app.get('/', function(req, res){
+    Post.findAll({order: [['id', 'DESC']]}).then(function(post){ //  esse parâmentro da função pode ser qualquer nome.
+        res.render('home', {posts: post})
+    })
+})
+
 app.get('/cad', function(req, res){
       res.render('formulario')
 })
@@ -25,11 +31,19 @@ app.post('/send', function(req, res){
         titulo: req.body.titulo,
         conteudo: req.body.conteudo
     }).then(function(){
-        res.send("Post criado com sucesso")
+        res.redirect("/")
     }).catch(function(erro){
         res.send("Houve um erro: "+ erro)
     })
 
+})
+
+app.get('/delete/:id', function(req, res){
+    Post.destroy({where: {'id': req.params.id}}).then(function(){
+        res.send("Mensagem apagada com sucesso!")
+    }).catch(function(erro){
+        res.send("Operação não concluída")
+    })
 })
 
 app.listen(8081, function(req, res){
